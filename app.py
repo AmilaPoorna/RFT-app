@@ -31,7 +31,7 @@ denier = st.selectbox('Denier', [44, 70, 78, 100])
 
 dyeing_method = st.selectbox('Dyeing Method', ['Bullet', 'Hank', 'Package'])
 
-colour = st.multiselect('Colour', ['Black', 'White', 'Grey', 'Blue', 'Navy Blue', 'Green', 'Pink', 'Red',
+colour = st.selectbox('Colour', ['Black', 'White', 'Grey', 'Blue', 'Navy Blue', 'Green', 'Pink', 'Red',
                                            'Beige', 'Orange', 'Brown', 'Purple', 'Cream', 'Yellow', 'Maroon', 'Other'])
 
 machine_capacity = st.selectbox('Machine Capacity (Packages)', [1, 2, 3, 4, 5, 6, 8, 10, 12, 15, 16, 24, 28, 30, 36, 42,
