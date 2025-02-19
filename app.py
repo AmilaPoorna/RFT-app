@@ -85,8 +85,9 @@ if st.button('Predict'):
     st.session_state.prediction_label = "RFT" if prediction_class[0] == 1 else "WFT"
     st.session_state.show_cost_fields = prediction_class[0] == 1  # Show cost prediction fields if RFT
 
-# Display Classification Result
-st.write(f"Prediction: {st.session_state.get('prediction_label', 'Not Predicted')}")
+# Display Classification Result Only if Prediction Exists
+if st.session_state.prediction_label is not None:
+    st.write(f"Prediction: {st.session_state.prediction_label}")
 
 # Cost Prediction for RFT class
 if st.session_state.show_cost_fields:
