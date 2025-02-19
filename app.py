@@ -3,27 +3,6 @@ import joblib
 import numpy as np
 import pandas as pd
 from sklearn.preprocessing import StandardScaler
-import base64
-
-def set_background(image_file):
-    """Sets the background image for the Streamlit app."""
-    with open(image_file, "rb") as image:
-        encoded_image = base64.b64encode(image.read()).decode()
-    
-    page_bg_img = f"""
-    <style>
-    .stApp {{
-        background-image: url("data:image/jpeg;base64,{encoded_image}");
-        background-size: cover;
-        background-position: center;
-        background-repeat: no-repeat;
-    }}
-    </style>
-    """
-    st.markdown(page_bg_img, unsafe_allow_html=True)
-
-# Call function to set background image (Make sure background.jpg is in the same directory)
-set_background("background.jpg")
 
 classification_model = joblib.load('classification_model.pkl')
 regression_model = joblib.load('regression_model.pkl')
