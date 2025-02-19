@@ -118,6 +118,5 @@ if st.session_state.show_cost_section:
         st.write(f"Predicted Cost: {predicted_cost[0]:.2f} LKR")
 
     if st.button('Cancel'):
-        st.session_state.prediction_class = None
         st.session_state.show_cost_section = False
         st.rerun()
