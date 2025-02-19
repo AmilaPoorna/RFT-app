@@ -71,7 +71,7 @@ if st.button('Predict Status'):
     rft_data['RecipeQty'] = c_scaler.transform(rft_data[['RecipeQty']])
     
     prediction_class = classification_model.predict(rft_data)
-    st.session_state.prediction_class = prediction_class[0]  # Store result in session_state
+    st.session_state.prediction_class = prediction_class[0]
 
 if st.session_state.prediction_class is not None:
     if st.session_state.prediction_class == 1:
@@ -112,4 +112,4 @@ if st.session_state.prediction_class is not None:
 
 if st.button('Cancel'):
     st.session_state.prediction_class = None
-    st.experimental_rerun()
+    st.rerun()
