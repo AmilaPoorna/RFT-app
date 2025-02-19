@@ -32,6 +32,7 @@ st.markdown(
     .black-title {
         color: black !important;
         font-size: 36px !important;
+        font-weight: bold;
     }
     </style>
     """,
