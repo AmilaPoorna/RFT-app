@@ -42,6 +42,7 @@ st.markdown(
         color: black !important;
         font-size: 36px !important;
         font-weight: bold;
+        font-weight: bold !important;
     }
     </style>
     """,
