@@ -26,7 +26,7 @@ def set_background(image_path):
 
 set_background("background.jpg")
 
-st.title('Nylon Dyeing Recipe Status Predictor')
+st.markdown("<h1 style='color:gold;'>Nylon Dyeing Recipe Status Predictor</h1>", unsafe_allow_html=True)
 
 classification_model = joblib.load('classification_model.pkl')
 regression_model = joblib.load('regression_model.pkl')
