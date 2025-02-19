@@ -80,7 +80,6 @@ if st.button('Predict Status'):
     st.session_state.prediction_class = prediction_class[0]
     st.session_state.prediction_label = "RFT" if prediction_class[0] == 1 else "WFT. Please proceed with necessary steps."
     st.session_state.show_value_fields = prediction_class[0] == 1
-    st.session_state.prediction_value = None  # Reset cost when re-predicting status
 
 # Display Classification Result
 if st.session_state.prediction_label is not None:
@@ -88,10 +87,16 @@ if st.session_state.prediction_label is not None:
 
 # Cost Prediction for RFT class
 if st.session_state.show_value_fields:
-    # Store selected supplier and ISO150 in session state to prevent resets
-    st.session_state.selected_supplier = st.selectbox('Supplier', ['Rudolf', 'Ohyoung', 'Harris & Menuk'],
-                                                      index=['Rudolf', 'Ohyoung', 'Harris & Menuk'].index(st.session_state.selected_supplier))
-    st.session_state.selected_iso150 = st.radio('ISO 150', ['Yes', 'No'], index=['Yes', 'No'].index(st.session_state.selected_iso150))
+    # Store supplier and ISO 150 selections
+    supplier = st.selectbox('Supplier', ['Rudolf', 'Ohyoung', 'Harris & Menuk'],
+                            index=['Rudolf', 'Ohyoung', 'Harris & Menuk'].index(st.session_state.selected_supplier))
+    iso_150 = st.radio('ISO 150', ['Yes', 'No'], index=['Yes', 'No'].index(st.session_state.selected_iso150))
+
+    # Update session state when selections change
+    if supplier != st.session_state.selected_supplier:
+        st.session_state.selected_supplier = supplier
+    if iso_150 != st.session_state.selected_iso150:
+        st.session_state.selected_iso150 = iso_150
 
     if st.button('Predict Cost'):
         cost_data = pd.DataFrame({
@@ -122,7 +127,7 @@ if st.session_state.show_value_fields:
 
         cost_data['RecipeQty'] = r_scaler.transform(cost_data[['RecipeQty']])
 
-        st.session_state.prediction_value = regression_model.predict(cost_data)[0]  # Store predicted cost
+        st.session_state.prediction_value = regression_model.predict(cost_data)[0]
 
     # Display predicted cost if available
     if st.session_state.prediction_value is not None:
@@ -130,6 +135,5 @@ if st.session_state.show_value_fields:
 
     # Cancel Button
     if st.button('Cancel'):
-        st.session_state.show_value_fields = False  # Hide cost fields but keep prediction
-        st.session_state.prediction_value = None  # Reset cost
+        st.session_state.show_value_fields = False
         st.rerun()
