@@ -27,7 +27,7 @@ lab_dip = st.radio('Lab Dip', ['Yes', 'No'])
 
 nylon_type = st.selectbox('Nylon Type', ['Stretch Nylon', 'Micro Fiber Streatch Nylon', 'Other'])
 
-denier = st.selectbox('Denier', [44, 70, 78, 100])
+denier = st.selectbox('Denier', ['44', '70', '78', '100'])
 
 dyeing_method = st.selectbox('Dyeing Method', ['Bullet', 'Hank', 'Package'])
 
@@ -59,7 +59,7 @@ if st.button('Predict'):
         rft_data[col] = False
     rft_data = rft_data[c_X_train]
     rft_data['RecipeQty'] = c_scaler.transform(rft_data[['RecipeQty']])
-    rft_data['Denier'] =c_denier_encoder.transform(rft_data['Denier'])
+    rft_data['Denier'] = c_denier_encoder.transform(rft_data['Denier'])
     rft_data['MachineCapacity(Packages)'] = c_capacity_encoder.transform(rft_data['MachineCapacity(Packages)'])
 
     st.dataframe(rft_data)
