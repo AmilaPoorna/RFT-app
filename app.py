@@ -62,6 +62,8 @@ if st.button('Predict'):
     rft_data['Denier'] =c_denier_encoder.transform(rft_data['Denier'])
     rft_data['MachineCapacity(Packages)'] = c_capacity_encoder.transform(rft_data['MachineCapacity(Packages)'])
 
+    st.dataframe(rft_data)
+
     prediction_class = classification_model.predict(rft_data)
 
     if prediction_class[0] == 1:
