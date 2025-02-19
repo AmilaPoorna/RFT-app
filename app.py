@@ -27,7 +27,7 @@ lab_dip = st.radio('Lab Dip', ['Yes', 'No'])
 
 nylon_type = st.selectbox('Nylon Type', ['Stretch Nylon', 'Micro Fiber Streatch Nylon', 'Other'])
 
-denier = st.selectbox('Denier', ['44', '70', '78', '100'])
+denier = st.selectbox('Denier', [44, 70, 78, 100])
 
 dyeing_method = st.selectbox('Dyeing Method', ['Bullet', 'Hank', 'Package'])
 
