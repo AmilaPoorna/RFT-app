@@ -41,7 +41,7 @@ st.markdown(
     .black-title {
         color: black !important;
         font-size: 36px !important;
-        font-weight: bold !important;
+        font-weight: bold;
     }
     </style>
     """,
@@ -63,8 +63,8 @@ st.markdown(
     div[data-testid="stSelectbox"] label,
     div[data-testid="stRadio"] label {
         color: black !important;
-        font-size: 16px !important;
-        font-weight: bold !important;
+        font-size: 16px;
+        font-weight: bold;
     }
     </style>
     """,
