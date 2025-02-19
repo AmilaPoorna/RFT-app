@@ -29,9 +29,9 @@ set_background("background.jpg")
 st.markdown(
     """
     <style>
-    .gold-title {
-        color: gold !important;
-        font-size: 36px;
+    .black-title {
+        color: black !important;
+        font-size: 72px;
         font-weight: bold;
     }
     </style>
@@ -39,7 +39,7 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-st.markdown('<p class="gold-title">Nylon Dyeing Recipe Status Predictor</p>', unsafe_allow_html=True)
+st.markdown('<p class="black-title">Nylon Dyeing Recipe Status Predictor</p>', unsafe_allow_html=True)
 
 classification_model = joblib.load('classification_model.pkl')
 regression_model = joblib.load('regression_model.pkl')
