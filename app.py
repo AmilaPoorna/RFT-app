@@ -3,6 +3,7 @@ import joblib
 import numpy as np
 import pandas as pd
 from sklearn.preprocessing import StandardScaler
+import base64
 
 def set_background(image_file):
     """Sets the background image for the Streamlit app."""
