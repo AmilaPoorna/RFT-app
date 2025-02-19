@@ -31,8 +31,8 @@ machine_capacity = st.selectbox('Machine Capacity (Packages)', [1, 2, 3, 4, 5, 6
 if 'prediction_class' not in st.session_state:
     st.session_state.prediction_class = None
     st.session_state.prediction_label = None
-    st.session_state.show_cost_fields = False
-    st.session_state.predicted_cost = None
+    st.session_state.show_value_fields = False
+    st.session_state.prediction_value = None
 
 if st.button('Predict Status'):
     input_data = {
@@ -73,8 +73,8 @@ if st.button('Predict Status'):
 
     st.session_state.prediction_class = prediction_class[0]
     st.session_state.prediction_label = "RFT" if prediction_class[0] == 1 else "WFT. Please proceed with necessary steps."
-    st.session_state.show_cost_fields = prediction_class[0] == 1
-    st.session_state.predicted_cost = None
+    st.session_state.show_value_fields = prediction_class[0] == 1
+    st.session_state.prediction_value = None
 
 if st.session_state.prediction_label is not None:
     st.write(f"Prediction: {st.session_state.prediction_label}")
@@ -115,7 +115,10 @@ if st.session_state.show_cost_fields:
         predicted_cost = regression_model.predict(cost_data)
         st.write(f"Predicted Cost: {predicted_cost[0]:.2f} LKR")
 
+    if st.session_state.prediction_value is not None:
+        st.write(f"Predicted Cost: {st.session_state.prediction_value:.2f} LKR")
+
     if st.button('Cancel'):
-        st.session_state.show_cost_fields = False
-        st.session_state.predicted_cost = None
+        st.session_state.show_value_fields = False
+        st.session_state.prediction_value = None
         st.rerun()
