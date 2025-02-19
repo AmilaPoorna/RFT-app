@@ -4,7 +4,6 @@ import numpy as np
 import pandas as pd
 from sklearn.preprocessing import StandardScaler
 
-# Load models and encoders
 classification_model = joblib.load('classification_model.pkl')
 regression_model = joblib.load('regression_model.pkl')
 c_denier_encoder = joblib.load('c_denier_encoder.pkl')
@@ -14,50 +13,12 @@ c_X_train = joblib.load("c_X_train.pkl")
 r_scaler = joblib.load('r_scaler.pkl')
 r_X_train = joblib.load("r_X_train.pkl")
 
-# Set Page Configuration
-st.set_page_config(page_title="Nylon Dyeing Predictor", page_icon="🎨", layout="wide")
-
-# Custom CSS for Background
-st.markdown(
-    """
-    <style>
-    body {
-        background-image: url('https://www.textileinsight.com/wp-content/uploads/2021/10/dyeing-process.jpg');
-        background-size: cover;
-    }
-    .stApp {
-        background: rgba(255, 255, 255, 0.9);
-        padding: 20px;
-        border-radius: 15px;
-        box-shadow: 0px 0px 15px rgba(0,0,0,0.2);
-    }
-    h1 {
-        color: #1f4e79;
-        text-align: center;
-        font-weight: bold;
-    }
-    .stButton>button {
-        background-color: #1f4e79;
-        color: white;
-        border-radius: 10px;
-        font-size: 16px;
-        padding: 10px;
-    }
-    .stButton>button:hover {
-        background-color: #163e5e;
-    }
-    </style>
-    """,
-    unsafe_allow_html=True
-)
-
-st.title('🎨 Nylon Dyeing Recipe Status Predictor')
+st.title('Nylon Dyeing Recipe Status Predictor')
 
 def reset_prediction():
     st.session_state.prediction_class = None
     st.session_state.show_cost_section = False
 
-# User Inputs
 recipe_quantity = st.number_input('Recipe Quantity (kg)', min_value=0.001, step=0.001, format="%.3f", key="recipe_quantity", on_change=reset_prediction)
 colour_shade = st.selectbox('Colour Shade', ['Very Light', 'Light', 'Medium', 'Dark', 'Very Dark'], key="colour_shade", on_change=reset_prediction)
 first_colour = st.radio('First Colour', ['Yes', 'No'], key="first_colour", on_change=reset_prediction)
@@ -72,14 +33,12 @@ machine_capacity = st.selectbox('Machine Capacity (Packages)', [1, 2, 3, 4, 5, 6
                                                                  25, 48, 54, 56, 75, 90, 104, 108, 132, 216, 264, 432, 558, 981],
                                 key="machine_capacity", on_change=reset_prediction)
 
-# Session States
 if 'prediction_class' not in st.session_state:
     st.session_state.prediction_class = None
 
 if 'show_cost_section' not in st.session_state:
     st.session_state.show_cost_section = False
 
-# Prediction Button
 if st.button('Predict Status'):
     input_data = {
         'RecipeQty': recipe_quantity,
@@ -121,23 +80,47 @@ if st.button('Predict Status'):
     else:
         st.session_state.show_cost_section = False
 
-# Display Prediction
 if st.session_state.prediction_class is not None:
-    prediction_label = "✅ RFT" if st.session_state.prediction_class == 1 else "⚠️ WFT. Please proceed with necessary steps."
-    st.subheader(f"Prediction: {prediction_label}")
+    if st.session_state.prediction_class == 1:
+        prediction_label = "RFT"
+    else:
+        prediction_label = "WFT. Please proceed with necessary steps."
+    
+    st.write(f"Prediction: {prediction_label}")
 
-# Cost Prediction Section
 if st.session_state.show_cost_section:
     supplier = st.selectbox('Supplier', ['Rudolf', 'Ohyoung', 'Harris & Menuk'], key="supplier")
     iso_105 = st.radio('ISO 105', ['Yes', 'No'], key="iso_105")
 
     if st.button('Predict Cost'):
-        cost_data = pd.DataFrame({'RecipeQty': recipe_quantity, 'ColourShade': colour_shade,
-                                  'ColourDescription': colour_description, 'NylonType': nylon_type,
-                                  'DyeingMethod': dyeing_method, 'Supplier': supplier, 'ISO105': iso_105}, index=[0])
+        cost_data = pd.DataFrame({
+            'RecipeQty': recipe_quantity,
+            'ColourShade': colour_shade,
+            'ColourDescription': colour_description,
+            'NylonType': nylon_type,
+            'DyeingMethod': dyeing_method,
+            'Supplier': supplier,
+            'ISO105': iso_105
+        }, index=[0])
         
-        predicted_cost = regression_model.predict(pd.get_dummies(cost_data))
-        st.subheader(f"💰 Predicted Cost: {predicted_cost[0]:,.2f} LKR")
+        cost_dummy_cols = ['ColourShade', 'ColourDescription', 'NylonType', 'DyeingMethod', 'Supplier', 'ISO105']
+        cost_dummies = pd.get_dummies(cost_data[cost_dummy_cols])
+        cost_data = pd.concat([cost_data, cost_dummies], axis=1)
+        cost_data = cost_data.drop(columns=cost_dummy_cols)
+        
+        missing_cols = [col for col in r_X_train if col not in cost_data.columns]
+        for col in missing_cols:
+            cost_data[col] = False
+        
+        cost_drop_first = ['ColourShade_Dark', 'ColourDescription_Normal', 'NylonType_Micro Fiber Streatch Nylon', 
+                           'DyeingMethod_Bullet', 'Supplier_Harris & Menuk', 'ISO105_No']
+        cost_drop = [col for col in cost_drop_first if col in cost_data.columns]
+        cost_data = cost_data.drop(columns=cost_drop)
+        cost_data = cost_data[r_X_train]
+        cost_data['RecipeQty'] = r_scaler.transform(cost_data[['RecipeQty']])
+
+        predicted_cost = regression_model.predict(cost_data)
+        st.write(f"Predicted Cost: {predicted_cost[0]:.2f} LKR")
 
     if st.button('Cancel'):
         st.session_state.show_cost_section = False
