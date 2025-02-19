@@ -33,7 +33,7 @@ if 'prediction_class' not in st.session_state:
     st.session_state.prediction_label = None
     st.session_state.show_cost_fields = False
 
-if st.button('Predict Cost'):
+if st.button('Predict Status'):
     input_data = {
         'RecipeQty': recipe_quantity,
         'ColourShade': colour_shade,
