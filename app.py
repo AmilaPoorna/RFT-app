@@ -125,7 +125,7 @@ if st.session_state.show_cost_section:
     cost_drop_first = ['ColourShade_Dark', 'ColourDescription_Normal', 'NylonType_Micro Fiber Streatch Nylon', 'DyeingMethod_Bullet', 'Supplier_Harris & Menuk', 'ISO150_No']
     cost_drop = [col for col in cost_drop_first if col in cost_data.columns]
     cost_data = cost_data.drop(columns=cost_drop)
-    st.write("Processed Cost Data:", cost_data[r_X_train])
+    st.write("Processed Cost Data:", cost_data)
     cost_data = cost_data[r_X_train]
     cost_data['RecipeQty'] = r_scaler.transform(cost_data[['RecipeQty']])
 
