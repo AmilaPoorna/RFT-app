@@ -55,7 +55,7 @@ if st.button('Predict'):
     rft_data = pd.DataFrame(input_data, index=[0])
     st.write("Known Denier Classes:", c_denier_encoder.classes_)
     unknown_denier = set([denier]) - set(c_denier_encoder.classes_)
-    st.write("Unseen Denier Labels:", unknown_denier
+    st.write("Unseen Denier Labels:", unknown_denier)
     rft_data = pd.get_dummies(rft_data[['IsFirstColour', 'ColourShade', 'ColourDescription', 'IsLabDip', 'NylonType', 'DyeingMethod', 'Colour']])
     missing_cols = [col for col in c_X_train if col not in rft_data.columns]
     for col in missing_cols:
