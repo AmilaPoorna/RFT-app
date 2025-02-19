@@ -53,7 +53,7 @@ if st.button('Predict'):
     }
 
     rft_data = pd.DataFrame(input_data, index=[0])
-    rft_data = pd.get_dummies(rft_data['IsFirstColour', 'ColourShade', 'ColourDescription', 'IsLabDip', 'NylonType', 'DyeingMethod', 'Colour'])
+    rft_data = pd.get_dummies(rft_data[['IsFirstColour', 'ColourShade', 'ColourDescription', 'IsLabDip', 'NylonType', 'DyeingMethod', 'Colour']])
     missing_cols = [col for col in c_training_columns if col not in rft_data.columns]
     for col in missing_cols:
         rft_data[col] = 0
@@ -85,7 +85,7 @@ if st.button('Predict'):
                 'Supplier': supplier,
                 'ISO150': iso_150
             }, index=[0])
-            cost_data = pd.get_dummies(rft_data['ColourShade', 'ColourDescription', 'NylonType', 'DyeingMethod', 'Supplier', 'ISO105'])
+            cost_data = pd.get_dummies(rft_data[['ColourShade', 'ColourDescription', 'NylonType', 'DyeingMethod', 'Supplier', 'ISO105']])
             missing_cols = [col for col in r_training_columns if col not in cost_data.columns]
             for col in missing_cols:
                 cost_data[col] = 0
