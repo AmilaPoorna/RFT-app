@@ -115,6 +115,7 @@ if st.session_state.show_cost_section:
         'ISO150': iso_150
     }, index=[0])
     
+    st.write("Processed Cost Data:", cost_data)
     cost_dummy_cols = ['ColourShade', 'ColourDescription', 'NylonType', 'DyeingMethod', 'Supplier', 'ISO150']
     cost_dummies = pd.get_dummies(cost_data[cost_dummy_cols])
     cost_data = pd.concat([cost_data, cost_dummies], axis=1)
