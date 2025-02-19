@@ -53,16 +53,13 @@ if st.button('Predict'):
     }
 
     rft_data = pd.DataFrame(input_data, index=[0])
-    st.write("Known Denier Classes:", c_denier_encoder.classes_)
-    unknown_denier = set([denier]) - set(c_denier_encoder.classes_)
-    st.write("Unseen Denier Labels:", unknown_denier)
     rft_data = pd.get_dummies(rft_data[['IsFirstColour', 'ColourShade', 'ColourDescription', 'IsLabDip', 'NylonType', 'DyeingMethod', 'Colour']])
     missing_cols = [col for col in c_X_train if col not in rft_data.columns]
     for col in missing_cols:
         rft_data[col] = False
     rft_data = rft_data[c_X_train]
     rft_data['RecipeQty'] = c_scaler.transform(rft_data[['RecipeQty']])
-    rft_data['Denier'] = c_denier_encoder.transform(np.array(rft_data[['Denier']]).values.reshape(-1,1))
+    rft_data['Denier'] = c_denier_encoder.transform(rft_data['Denier'])
     rft_data['MachineCapacity(Packages)'] = c_capacity_encoder.transform(rft_data['MachineCapacity(Packages)'])
 
     prediction_class = classification_model.predict(rft_data)
