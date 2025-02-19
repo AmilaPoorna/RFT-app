@@ -19,7 +19,7 @@ def reset_prediction():
     st.session_state.prediction_class = None
     st.session_state.show_cost_section = False
 
-recipe_quantity = st.number_input('Recipe Quantity (kg)', min_value=0.001, step=0.001, key="recipe_quantity", on_change=reset_prediction)
+recipe_quantity = st.number_input('Recipe Quantity (kg)', min_value=0.001, step=0.001, format="%.3f", key="recipe_quantity", on_change=reset_prediction)
 colour_shade = st.selectbox('Colour Shade', ['Very Light', 'Light', 'Medium', 'Dark', 'Very Dark'], key="colour_shade", on_change=reset_prediction)
 first_colour = st.radio('First Colour', ['Yes', 'No'], key="first_colour", on_change=reset_prediction)
 colour_description = st.selectbox('Colour Description', ['Normal', 'Softner', 'Special Colour'], key="colour_description", on_change=reset_prediction)
