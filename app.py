@@ -15,29 +15,38 @@ r_X_train = joblib.load("r_X_train.pkl")
 
 st.title('Nylon Dyeing Recipe Status Predictor')
 
-recipe_quantity = st.number_input('Recipe Quantity (kg)', min_value=0.001, step=0.001, format="%.3f")
+# Session state to manage cost prediction visibility
+if "show_cost_section" not in st.session_state:
+    st.session_state.show_cost_section = False
 
-colour_shade = st.selectbox('Colour Shade', ['Very Light', 'Light', 'Medium', 'Dark', 'Very Dark'])
+# Function to reset cost prediction section
+def reset_cost_section():
+    st.session_state.show_cost_section = False
 
-first_colour = st.radio('First Colour', ['Yes', 'No'])
+# Recipe Status Inputs
+recipe_quantity = st.number_input('Recipe Quantity (kg)', min_value=0.001, step=0.001, format="%.3f", on_change=reset_cost_section)
 
-colour_description = st.selectbox('Colour Description', ['Normal', 'Softner', 'Special Colour'])
+colour_shade = st.selectbox('Colour Shade', ['Very Light', 'Light', 'Medium', 'Dark', 'Very Dark'], on_change=reset_cost_section)
 
-lab_dip = st.radio('Lab Dip', ['Yes', 'No'])
+first_colour = st.radio('First Colour', ['Yes', 'No'], on_change=reset_cost_section)
 
-nylon_type = st.selectbox('Nylon Type', ['Stretch Nylon', 'Micro Fiber Streatch Nylon', 'Other'])
+colour_description = st.selectbox('Colour Description', ['Normal', 'Softner', 'Special Colour'], on_change=reset_cost_section)
 
-denier = st.selectbox('Denier', [44, 70, 78, 100])
+lab_dip = st.radio('Lab Dip', ['Yes', 'No'], on_change=reset_cost_section)
 
-dyeing_method = st.selectbox('Dyeing Method', ['Bullet', 'Hank', 'Package'])
+nylon_type = st.selectbox('Nylon Type', ['Stretch Nylon', 'Micro Fiber Streatch Nylon', 'Other'], on_change=reset_cost_section)
+
+denier = st.selectbox('Denier', [44, 70, 78, 100], on_change=reset_cost_section)
+
+dyeing_method = st.selectbox('Dyeing Method', ['Bullet', 'Hank', 'Package'], on_change=reset_cost_section)
 
 colour = st.selectbox('Colour', ['Black', 'White', 'Grey', 'Blue', 'Navy Blue', 'Green', 'Pink', 'Red',
-                                           'Beige', 'Orange', 'Brown', 'Purple', 'Cream', 'Yellow', 'Maroon', 'Other'])
+                                           'Beige', 'Orange', 'Brown', 'Purple', 'Cream', 'Yellow', 'Maroon', 'Other'], on_change=reset_cost_section)
 
 machine_capacity = st.selectbox('Machine Capacity (Packages)', [1, 2, 3, 4, 5, 6, 8, 10, 12, 15, 16, 24, 28, 30, 36, 42,
-                                                               25, 48, 54, 56, 75, 90, 104, 108, 132, 216, 264, 432, 558, 981])
+                                                               25, 48, 54, 56, 75, 90, 104, 108, 132, 216, 264, 432, 558, 981], on_change=reset_cost_section)
 
-if st.button('Predict'):
+if st.button('Predict Status'):
 
     input_data = {
         'RecipeQty': recipe_quantity,
@@ -72,43 +81,48 @@ if st.button('Predict'):
 
     if prediction_class[0] == 1:
         prediction_label = "RFT"
-    elif prediction_class[0] == 0:
+    else:
         prediction_label = "WFT"
-
+    
     st.write(f"Prediction: {prediction_label}")
+
+    if prediction_class[0] == 0:
+        st.write("Please proceed with necessary steps.")
 
     if prediction_class[0] == 1:
         supplier = st.selectbox('Supplier', ['Rudolf', 'Ohyoung', 'Harris & Menuk'])
         iso_150 = st.radio('ISO 150', ['Yes', 'No'])
 
         if st.button('Predict Cost'):
-            cost_data = pd.DataFrame({
-                'RecipeQty': recipe_quantity,
-                'ColourShade': colour_shade,
-                'ColourDescription': colour_description,
-                'NylonType': nylon_type,
-                'DyeingMethod': dyeing_method,
-                'Supplier': supplier,
-                'ISO150': iso_150
-            }, index=[0])
-            cost_dummy_cols = ['ColourShade', 'ColourDescription', 'NylonType', 'DyeingMethod', 'Supplier', 'ISO105']
-            cost_dummies = pd.get_dummies(cost_data[cost_dummy_cols])
-            cost_data = pd.concat([cost_data, cost_dummies], axis=1)
-            cost_data = cost_data.drop(columns=cost_dummy_cols)
-            missing_cols = [col for col in c_X_train if col not in rft_data.columns]
-            for col in missing_cols:
-                cost_data[col] = False
-            cost_drop_first = ['ColourShade_Dark', 'ColourDescription_Normal', 'NylonType_Micro Fiber Streatch Nylon', 'DyeingMethod_Bullet', 'Supplier_Harris & Menuk', 'ISO150_No']
-            cost_drop = [col for col in cost_drop_first if col in cost_data.columns]
-            cost_data = cost_data.drop(columns=cost_drop)
-            cost_data = cost_data[r_X_train]
-            cost_data['RecipeQty'] = r_scaler.transform(cost_data[['RecipeQty']])
+            st.session_state.show_cost_section = True
 
-            predicted_cost = regression_model.predict(cost_data)
-            st.write(f"Predicted Cost: {predicted_cost[0]:.2f} LKR")
+if st.session_state.show_cost_section:
+    cost_data = pd.DataFrame({
+        'RecipeQty': recipe_quantity,
+        'ColourShade': colour_shade,
+        'ColourDescription': colour_description,
+        'NylonType': nylon_type,
+        'DyeingMethod': dyeing_method,
+        'Supplier': supplier,
+        'ISO150': iso_150
+    }, index=[0])
+    
+    cost_dummy_cols = ['ColourShade', 'ColourDescription', 'NylonType', 'DyeingMethod', 'Supplier', 'ISO150']
+    cost_dummies = pd.get_dummies(cost_data[cost_dummy_cols])
+    cost_data = pd.concat([cost_data, cost_dummies], axis=1)
+    cost_data = cost_data.drop(columns=cost_dummy_cols)
+    missing_cols = [col for col in c_X_train if col not in cost_data.columns]
+    for col in missing_cols:
+        cost_data[col] = False
+    cost_drop_first = ['ColourShade_Dark', 'ColourDescription_Normal', 'NylonType_Micro Fiber Streatch Nylon', 'DyeingMethod_Bullet', 'Supplier_Harris & Menuk', 'ISO150_No']
+    cost_drop = [col for col in cost_drop_first if col in cost_data.columns]
+    cost_data = cost_data.drop(columns=cost_drop)
+    cost_data = cost_data[r_X_train]
+    cost_data['RecipeQty'] = r_scaler.transform(cost_data[['RecipeQty']])
 
-    elif prediction_class[0] == 0:
-        st.write("Please proceed with necessary steps.")
+    predicted_cost = regression_model.predict(cost_data)
+    st.write(f"Predicted Cost: {predicted_cost[0]:.2f} LKR")
 
-if st.button('Cancel'):
-    st.experimental_rerun()
+    if st.button('Cancel'):
+        st.session_state.show_cost_section = False
+        st.experimental_rerun()
