@@ -61,7 +61,7 @@ if st.button('Predict'):
     rft_data = rft_data[c_X_train]
     rft_data['RecipeQty'] = c_scaler.transform(rft_data[['RecipeQty']])
     st.write("Known Denier Classes:", c_denier_encoder.classes_)
-    st.write("Denier Values in Input Data:", rft_data['Denier'].unique())
+    st.write("Denier Values in Input Data:", rft_data['Denier'])
     rft_data['Denier'] = c_denier_encoder.transform(rft_data['Denier'])
     rft_data['MachineCapacity(Packages)'] = c_capacity_encoder.transform(rft_data['MachineCapacity(Packages)'])
 
