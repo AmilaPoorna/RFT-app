@@ -59,21 +59,6 @@ if st.button('Predict'):
         rft_data[col] = False
     rft_data = rft_data[c_X_train]
     rft_data['RecipeQty'] = c_scaler.transform(rft_data[['RecipeQty']])
-    st.write("Known Denier Classes:", c_denier_encoder.classes_)
-    st.write("Denier Values in Input Data:", rft_data['Denier'].unique())
-
-    # Convert to string (if stored as int)
-    rft_data['Denier'] = rft_data['Denier'].astype(str)
-
-    # Handle unseen labels
-    known_denier_classes = set(c_denier_encoder.classes_)
-    unseen_denier_labels = set(rft_data['Denier']) - known_denier_classes
-    st.write("Unseen Denier Labels:", unseen_denier_labels)
-
-    # Replace unseen labels with the first known class
-    rft_data['Denier'] = rft_data['Denier'].apply(lambda x: x if x in known_denier_classes else c_denier_encoder.classes_[0])
-
-    # Transform safely
     rft_data['Denier'] = c_denier_encoder.transform(rft_data['Denier'])
     rft_data['MachineCapacity(Packages)'] = c_capacity_encoder.transform(rft_data['MachineCapacity(Packages)'])
 
