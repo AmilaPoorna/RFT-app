@@ -3,6 +3,7 @@ import joblib
 import numpy as np
 import pandas as pd
 from sklearn.preprocessing import StandardScaler
+import base64
 
 def get_base64_image(image_path):
     with open(image_path, "rb") as image_file:
