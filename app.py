@@ -58,9 +58,13 @@ st.markdown(
     """
     <style>
     /* Target all Streamlit widget labels */
-    label {
+    div[data-testid="stMarkdownContainer"] p,
+    div[data-testid="stNumberInput"] label,
+    div[data-testid="stSelectbox"] label,
+    div[data-testid="stRadio"] label {
         color: black !important;
-        font-size: 24px !important;
+        font-size: 16px !important;
+        font-weight: bold !important;
     }
     </style>
     """,
