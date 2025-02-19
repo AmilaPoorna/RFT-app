@@ -58,9 +58,9 @@ if st.button('Predict'):
     for col in missing_cols:
         rft_data[col] = 0
     rft_data = rft_data[c_X_train]
-    rft_data['RecipeQty'] = c_scaler.transform(rft_data['RecipeQty'])
-    rft_data['Denier'] =c_denier_encoder.transform(rft_data['Denier'])
-    rft_data['MachineCapacity(Packages)'] = c_capacity_encoder.transform(rft_data['MachineCapacity(Packages)'])
+    rft_data['RecipeQty'] = c_scaler.transform(rft_data[['RecipeQty']])
+    rft_data['Denier'] =c_denier_encoder.transform(rft_data[['Denier']])
+    rft_data['MachineCapacity(Packages)'] = c_capacity_encoder.transform(rft_data[['MachineCapacity(Packages)']])
 
     prediction_class = classification_model.predict(transformed_data)
 
@@ -90,7 +90,7 @@ if st.button('Predict'):
             for col in missing_cols:
                 cost_data[col] = 0
             cost_data = cost_data[r_X_train]
-            cost_data['RecipeQty'] = r_scaler.transform(cost_data['RecipeQty'])
+            cost_data['RecipeQty'] = r_scaler.transform(cost_data[['RecipeQty']])
 
             predicted_cost = regression_model.predict(cost_scaled_data)
             st.write(f"Predicted Cost: {predicted_cost[0]:.2f} LKR")
