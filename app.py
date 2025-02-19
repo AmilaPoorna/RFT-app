@@ -54,10 +54,10 @@ if st.button('Predict'):
 
     rft_data = pd.DataFrame(input_data, index=[0])
     rft_data = pd.get_dummies(rft_data[['IsFirstColour', 'ColourShade', 'ColourDescription', 'IsLabDip', 'NylonType', 'DyeingMethod', 'Colour']])
-    missing_cols = [col for col in c_training_columns if col not in rft_data.columns]
+    missing_cols = [col for col in c_X_train if col not in rft_data.columns]
     for col in missing_cols:
         rft_data[col] = 0
-    rft_data = rft_data[c_training_columns]
+    rft_data = rft_data[c_X_train]
     rft_data['RecipeQty'] = c_scaler.transform(rft_data['RecipeQty'])
     rft_data['Denier'] =c_denier_encoder.transform(rft_data['Denier'])
     rft_data['MachineCapacity(Packages)'] = c_capacity_encoder.transform(rft_data['MachineCapacity(Packages)'])
@@ -86,9 +86,10 @@ if st.button('Predict'):
                 'ISO150': iso_150
             }, index=[0])
             cost_data = pd.get_dummies(rft_data[['ColourShade', 'ColourDescription', 'NylonType', 'DyeingMethod', 'Supplier', 'ISO105']])
-            missing_cols = [col for col in r_training_columns if col not in cost_data.columns]
+            missing_cols = [col for col in r_X_train if col not in cost_data.columns]
             for col in missing_cols:
                 cost_data[col] = 0
+            cost_data = cost_data[r_X_train]
             cost_data['RecipeQty'] = r_scaler.transform(cost_data['RecipeQty'])
 
             predicted_cost = regression_model.predict(cost_scaled_data)
