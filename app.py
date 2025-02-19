@@ -20,8 +20,8 @@ st.title('Nylon Dyeing Recipe Status Predictor')
 if 'prediction_class' not in st.session_state:
     st.session_state.prediction_class = None
     st.session_state.prediction_label = None
-    st.session_state.show_value_fields = False
-    st.session_state.prediction_value = None
+    st.session_state.show_value_fields = False  # Controls visibility of cost section
+    st.session_state.prediction_value = None  # Stores predicted cost
     st.session_state.selected_supplier = "Rudolf"
     st.session_state.selected_iso150 = "Yes"
     st.session_state.previous_inputs = None  # Store previous input values
@@ -40,7 +40,7 @@ colour = st.selectbox('Colour', ['Black', 'White', 'Grey', 'Blue', 'Navy Blue', 
 machine_capacity = st.selectbox('Machine Capacity (Packages)', [1, 2, 3, 4, 5, 6, 8, 10, 12, 15, 16, 24, 28, 30, 36, 42,
                                                                  25, 48, 54, 56, 75, 90, 104, 108, 132, 216, 264, 432, 558, 981])
 
-# Create a dictionary to store current inputs
+# Store current inputs
 current_inputs = {
     'RecipeQty': recipe_quantity,
     'ColourShade': colour_shade,
@@ -54,9 +54,10 @@ current_inputs = {
     'MachineCapacity(Packages)': machine_capacity
 }
 
-# Check if inputs have changed
+# If any field other than supplier/ISO150 changes, reset cost prediction section
 if st.session_state.previous_inputs is not None and st.session_state.previous_inputs != current_inputs:
-    st.session_state.prediction_value = None  # Reset predicted cost if any field changes
+    st.session_state.prediction_value = None
+    st.session_state.show_value_fields = False  # Hide cost prediction section
 
 # Update previous inputs in session state
 st.session_state.previous_inputs = current_inputs
@@ -72,11 +73,6 @@ if st.button('Predict Status'):
     missing_cols = [col for col in c_X_train if col not in rft_data.columns]
     for col in missing_cols:
         rft_data[col] = False
-
-    rft_drop_first = ['IsFirstColour_No', 'ColourShade_Dark', 'ColourDescription_Normal', 'IsLabDip_No',
-                      'NylonType_Micro Fiber Streatch Nylon', 'DyeingMethod_Bullet', 'Colour_Beige']
-    rft_drop = [col for col in rft_drop_first if col in rft_data.columns]
-    rft_data = rft_data.drop(columns=rft_drop, errors='ignore')
 
     rft_data = rft_data[c_X_train]
 
@@ -130,7 +126,7 @@ if st.session_state.show_value_fields:
 
         cost_data['RecipeQty'] = r_scaler.transform(cost_data[['RecipeQty']])
 
-        st.session_state.prediction_value = regression_model.predict(cost_data)[0]  # Store predicted cost
+        st.session_state.prediction_value = regression_model.predict(cost_data)[0]
 
     # Display predicted cost if available
     if st.session_state.prediction_value is not None:
