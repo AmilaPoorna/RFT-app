@@ -64,7 +64,6 @@ st.markdown(
     div[data-testid="stRadio"] label {
         color: black !important;
         font-size: 16px;
-        font-weight: bold;
     }
     </style>
     """,
