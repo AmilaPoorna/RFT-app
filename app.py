@@ -4,6 +4,13 @@ import numpy as np
 import pandas as pd
 from sklearn.preprocessing import StandardScaler
 
+def load_css(file_name):
+    with open(file_name, "r") as f:
+        st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
+
+# Load external CSS
+load_css("styles.css")
+
 classification_model = joblib.load('classification_model.pkl')
 regression_model = joblib.load('regression_model.pkl')
 c_denier_encoder = joblib.load('c_denier_encoder.pkl')
