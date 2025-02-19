@@ -62,7 +62,7 @@ if st.button('Predict'):
     rft_data['Denier'] =c_denier_encoder.transform(rft_data['Denier'])
     rft_data['MachineCapacity(Packages)'] = c_capacity_encoder.transform(rft_data['MachineCapacity(Packages)'])
 
-    prediction_class = classification_model.predict(transformed_data)
+    prediction_class = classification_model.predict(rft_data)
 
     if prediction_class[0] == 1:
         prediction_label = "RFT"
@@ -92,7 +92,7 @@ if st.button('Predict'):
             cost_data = cost_data[r_X_train]
             cost_data['RecipeQty'] = r_scaler.transform(cost_data[['RecipeQty']])
 
-            predicted_cost = regression_model.predict(cost_scaled_data)
+            predicted_cost = regression_model.predict(cost_data)
             st.write(f"Predicted Cost: {predicted_cost[0]:.2f} LKR")
 
     elif prediction_class[0] == 0:
