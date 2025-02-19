@@ -59,7 +59,7 @@ if st.button('Predict'):
         rft_data[col] = False
     rft_data = rft_data[c_X_train]
     rft_data['RecipeQty'] = c_scaler.transform(rft_data[['RecipeQty']])
-    rft_data['Denier'] = c_denier_encoder.transform(rft_data['Denier'])
+    #rft_data['Denier'] = c_denier_encoder.transform(rft_data['Denier'])
     rft_data['MachineCapacity(Packages)'] = c_capacity_encoder.transform(rft_data['MachineCapacity(Packages)'])
 
     prediction_class = classification_model.predict(rft_data)
