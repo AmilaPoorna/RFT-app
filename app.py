@@ -18,10 +18,13 @@ st.title('Nylon Dyeing Recipe Status Predictor')
 # Session state to manage cost prediction visibility
 if "show_cost_section" not in st.session_state:
     st.session_state.show_cost_section = False
+if "status_predicted" not in st.session_state:
+    st.session_state.status_predicted = False
 
 # Function to reset cost prediction section
 def reset_cost_section():
     st.session_state.show_cost_section = False
+    st.session_state.status_predicted = False
 
 # Recipe Status Inputs
 recipe_quantity = st.number_input('Recipe Quantity (kg)', min_value=0.001, step=0.001, format="%.3f", on_change=reset_cost_section)
@@ -90,12 +93,17 @@ if st.button('Predict Status'):
         st.write("Please proceed with necessary steps.")
 
     if prediction_class[0] == 1:
-        supplier = st.selectbox('Supplier', ['Rudolf', 'Ohyoung', 'Harris & Menuk'])
-        iso_150 = st.radio('ISO 150', ['Yes', 'No'])
+        st.session_state.status_predicted = True
 
-        if st.button('Predict Cost'):
-            st.session_state.show_cost_section = True
+# Cost Prediction Section - only show if status was predicted as RFT
+if st.session_state.status_predicted:
+    supplier = st.selectbox('Supplier', ['Rudolf', 'Ohyoung', 'Harris & Menuk'])
+    iso_150 = st.radio('ISO 150', ['Yes', 'No'])
 
+    if st.button('Predict Cost'):
+        st.session_state.show_cost_section = True
+
+# Show Cost Section only if activated
 if st.session_state.show_cost_section:
     cost_data = pd.DataFrame({
         'RecipeQty': recipe_quantity,
