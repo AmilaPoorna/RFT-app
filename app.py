@@ -82,7 +82,7 @@ if st.session_state.prediction_class is not None:
 
     if st.session_state.prediction_class == 1:
         supplier = st.selectbox('Supplier', ['Rudolf', 'Ohyoung', 'Harris & Menuk'], key="supplier")
-        iso_150 = st.radio('ISO 105', ['Yes', 'No'], key="iso_150")
+        iso_105 = st.radio('ISO 105', ['Yes', 'No'], key="iso_150")
 
         if st.button('Predict Cost'):
             cost_data = pd.DataFrame({
@@ -92,16 +92,16 @@ if st.session_state.prediction_class is not None:
                 'NylonType': nylon_type,
                 'DyeingMethod': dyeing_method,
                 'Supplier': supplier,
-                'ISO150': iso_150
+                'ISO105': iso_105
             }, index=[0])
-            cost_dummy_cols = ['ColourShade', 'ColourDescription', 'NylonType', 'DyeingMethod', 'Supplier', 'ISO150']
+            cost_dummy_cols = ['ColourShade', 'ColourDescription', 'NylonType', 'DyeingMethod', 'Supplier', 'ISO105']
             cost_dummies = pd.get_dummies(cost_data[cost_dummy_cols])
             cost_data = pd.concat([cost_data, cost_dummies], axis=1)
             cost_data = cost_data.drop(columns=cost_dummy_cols)
             missing_cols = [col for col in r_X_train if col not in cost_data.columns]
             for col in missing_cols:
                 cost_data[col] = False
-            cost_drop_first = ['ColourShade_Dark', 'ColourDescription_Normal', 'NylonType_Micro Fiber Streatch Nylon', 'DyeingMethod_Bullet', 'Supplier_Harris & Menuk', 'ISO150_No']
+            cost_drop_first = ['ColourShade_Dark', 'ColourDescription_Normal', 'NylonType_Micro Fiber Streatch Nylon', 'DyeingMethod_Bullet', 'Supplier_Harris & Menuk', 'ISO105_No']
             cost_drop = [col for col in cost_drop_first if col in cost_data.columns]
             cost_data = cost_data.drop(columns=cost_drop)
             cost_data = cost_data[r_X_train]
