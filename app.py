@@ -98,7 +98,7 @@ if st.button('Predict Status'):
 # Cost Prediction Section - only show if status was predicted as RFT
 if st.session_state.status_predicted:
     supplier = st.selectbox('Supplier', ['Rudolf', 'Ohyoung', 'Harris & Menuk'])
-    iso_150 = st.radio('ISO 150', ['Yes', 'No'])
+    iso_105 = st.radio('ISO 105', ['Yes', 'No'])
 
     if st.button('Predict Cost'):
         st.session_state.show_cost_section = True
@@ -112,7 +112,7 @@ if st.session_state.show_cost_section:
         'NylonType': nylon_type,
         'DyeingMethod': dyeing_method,
         'Supplier': supplier,
-        'ISO150': iso_150
+        'ISO105': iso_105
     }, index=[0])
     
     st.write("Processed Cost Data:", cost_data)
