@@ -26,7 +26,21 @@ def set_background(image_path):
 
 set_background("background.jpg")
 
-st.markdown("<h1 style='color:gold;'>Nylon Dyeing Recipe Status Predictor</h1>", unsafe_allow_html=True)
+st.markdown(
+    """
+    <style>
+    .title {
+        color: gold;
+        font-size: 40px;
+        font-weight: bold;
+        text-align: center;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+
+st.markdown("<h1 class='title'>Nylon Dyeing Recipe Status Predictor</h1>", unsafe_allow_html=True)
 
 classification_model = joblib.load('classification_model.pkl')
 regression_model = joblib.load('regression_model.pkl')
