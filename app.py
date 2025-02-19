@@ -16,42 +16,55 @@ r_X_train = joblib.load("r_X_train.pkl")
 
 st.title('Nylon Dyeing Recipe Status Predictor')
 
-# User Inputs
-recipe_quantity = st.number_input('Recipe Quantity (kg)', min_value=0.001, step=0.001)
-colour_shade = st.selectbox('Colour Shade', ['Very Light', 'Light', 'Medium', 'Dark', 'Very Dark'])
-first_colour = st.radio('First Colour', ['Yes', 'No'])
-colour_description = st.selectbox('Colour Description', ['Normal', 'Softner', 'Special Colour'])
-lab_dip = st.radio('Lab Dip', ['Yes', 'No'])
-nylon_type = st.selectbox('Nylon Type', ['Stretch Nylon', 'Micro Fiber Streatch Nylon', 'Other'])
-denier = st.selectbox('Denier', [44, 70, 78, 100])
-dyeing_method = st.selectbox('Dyeing Method', ['Bullet', 'Hank', 'Package'])
-colour = st.selectbox('Colour', ['Black', 'White', 'Grey', 'Blue', 'Navy Blue', 'Green', 'Pink', 'Red',
-                                 'Beige', 'Orange', 'Brown', 'Purple', 'Cream', 'Yellow', 'Maroon', 'Other'])
-machine_capacity = st.selectbox('Machine Capacity (Packages)', [1, 2, 3, 4, 5, 6, 8, 10, 12, 15, 16, 24, 28, 30, 36, 42,
-                                                                 25, 48, 54, 56, 75, 90, 104, 108, 132, 216, 264, 432, 558, 981])
-
-# Initialize session state variables
+# Initialize session state variables if not present
 if 'prediction_class' not in st.session_state:
     st.session_state.prediction_class = None
     st.session_state.prediction_label = None
     st.session_state.show_value_fields = False
     st.session_state.prediction_value = None
-    st.session_state.selected_supplier = "Rudolf"  # Default supplier
-    st.session_state.selected_iso150 = "Yes"  # Default ISO150
+    st.session_state.selected_supplier = "Rudolf"
+    st.session_state.selected_iso150 = "Yes"
+    st.session_state.previous_inputs = {}
+
+# Store current input values
+current_inputs = {
+    'recipe_quantity': st.number_input('Recipe Quantity (kg)', min_value=0.001, step=0.001),
+    'colour_shade': st.selectbox('Colour Shade', ['Very Light', 'Light', 'Medium', 'Dark', 'Very Dark']),
+    'first_colour': st.radio('First Colour', ['Yes', 'No']),
+    'colour_description': st.selectbox('Colour Description', ['Normal', 'Softner', 'Special Colour']),
+    'lab_dip': st.radio('Lab Dip', ['Yes', 'No']),
+    'nylon_type': st.selectbox('Nylon Type', ['Stretch Nylon', 'Micro Fiber Streatch Nylon', 'Other']),
+    'denier': st.selectbox('Denier', [44, 70, 78, 100]),
+    'dyeing_method': st.selectbox('Dyeing Method', ['Bullet', 'Hank', 'Package']),
+    'colour': st.selectbox('Colour', ['Black', 'White', 'Grey', 'Blue', 'Navy Blue', 'Green', 'Pink', 'Red',
+                                      'Beige', 'Orange', 'Brown', 'Purple', 'Cream', 'Yellow', 'Maroon', 'Other']),
+    'machine_capacity': st.selectbox('Machine Capacity (Packages)', [1, 2, 3, 4, 5, 6, 8, 10, 12, 15, 16, 24, 28, 30, 36, 42,
+                                                                     25, 48, 54, 56, 75, 90, 104, 108, 132, 216, 264, 432, 558, 981])
+}
+
+# If any field (except supplier and ISO150) has changed, reset cost prediction
+if st.session_state.previous_inputs and any(
+    st.session_state.previous_inputs[key] != current_inputs[key] for key in current_inputs
+):
+    st.session_state.prediction_value = None
+    st.session_state.show_value_fields = False
+
+# Update stored inputs
+st.session_state.previous_inputs = current_inputs.copy()
 
 # Predict Status Button
 if st.button('Predict Status'):
     input_data = {
-        'RecipeQty': recipe_quantity,
-        'ColourShade': colour_shade,
-        'IsFirstColour': first_colour,
-        'ColourDescription': colour_description,
-        'IsLabDip': lab_dip,
-        'NylonType': nylon_type,
-        'Denier': denier,
-        'DyeingMethod': dyeing_method,
-        'Colour': colour,
-        'MachineCapacity(Packages)': machine_capacity
+        'RecipeQty': current_inputs['recipe_quantity'],
+        'ColourShade': current_inputs['colour_shade'],
+        'IsFirstColour': current_inputs['first_colour'],
+        'ColourDescription': current_inputs['colour_description'],
+        'IsLabDip': current_inputs['lab_dip'],
+        'NylonType': current_inputs['nylon_type'],
+        'Denier': current_inputs['denier'],
+        'DyeingMethod': current_inputs['dyeing_method'],
+        'Colour': current_inputs['colour'],
+        'MachineCapacity(Packages)': current_inputs['machine_capacity']
     }
 
     rft_data = pd.DataFrame(input_data, index=[0])
@@ -87,44 +100,26 @@ if st.session_state.prediction_label is not None:
 
 # Cost Prediction for RFT class
 if st.session_state.show_value_fields:
-    # Store supplier and ISO 150 selections
     supplier = st.selectbox('Supplier', ['Rudolf', 'Ohyoung', 'Harris & Menuk'],
                             index=['Rudolf', 'Ohyoung', 'Harris & Menuk'].index(st.session_state.selected_supplier))
     iso_150 = st.radio('ISO 150', ['Yes', 'No'], index=['Yes', 'No'].index(st.session_state.selected_iso150))
 
-    # Update session state when selections change
-    if supplier != st.session_state.selected_supplier:
+    if supplier != st.session_state.selected_supplier or iso_150 != st.session_state.selected_iso150:
         st.session_state.selected_supplier = supplier
-    if iso_150 != st.session_state.selected_iso150:
         st.session_state.selected_iso150 = iso_150
 
     if st.button('Predict Cost'):
         cost_data = pd.DataFrame({
-            'RecipeQty': recipe_quantity,
-            'ColourShade': colour_shade,
-            'ColourDescription': colour_description,
-            'NylonType': nylon_type,
-            'DyeingMethod': dyeing_method,
-            'Supplier': st.session_state.selected_supplier,
-            'ISO150': st.session_state.selected_iso150
+            'RecipeQty': current_inputs['recipe_quantity'],
+            'ColourShade': current_inputs['colour_shade'],
+            'ColourDescription': current_inputs['colour_description'],
+            'NylonType': current_inputs['nylon_type'],
+            'DyeingMethod': current_inputs['dyeing_method'],
+            'Supplier': supplier,
+            'ISO150': iso_150
         }, index=[0])
 
-        cost_dummy_cols = ['ColourShade', 'ColourDescription', 'NylonType', 'DyeingMethod', 'Supplier', 'ISO150']
-        cost_dummies = pd.get_dummies(cost_data[cost_dummy_cols])
-        cost_data = pd.concat([cost_data, cost_dummies], axis=1)
-        cost_data = cost_data.drop(columns=cost_dummy_cols, errors='ignore')
-
-        missing_cols = [col for col in r_X_train if col not in cost_data.columns]
-        for col in missing_cols:
-            cost_data[col] = False
-
-        cost_drop_first = ['ColourShade_Dark', 'ColourDescription_Normal', 'NylonType_Micro Fiber Streatch Nylon',
-                           'DyeingMethod_Bullet', 'Supplier_Harris & Menuk', 'ISO150_No']
-        cost_drop = [col for col in cost_drop_first if col in cost_data.columns]
-        cost_data = cost_data.drop(columns=cost_drop, errors='ignore')
-
         cost_data = cost_data[r_X_train]
-
         cost_data['RecipeQty'] = r_scaler.transform(cost_data[['RecipeQty']])
 
         st.session_state.prediction_value = regression_model.predict(cost_data)[0]
@@ -133,7 +128,10 @@ if st.session_state.show_value_fields:
     if st.session_state.prediction_value is not None:
         st.write(f"Predicted Cost: {st.session_state.prediction_value:.2f} LKR")
 
-    # Cancel Button
+    # Cancel Button: Resets cost prediction, supplier, and ISO150
     if st.button('Cancel'):
         st.session_state.show_value_fields = False
+        st.session_state.prediction_value = None
+        st.session_state.selected_supplier = "Rudolf"
+        st.session_state.selected_iso150 = "Yes"
         st.rerun()
