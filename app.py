@@ -13,6 +13,23 @@ c_X_train = joblib.load("c_X_train.pkl")
 r_scaler = joblib.load('r_scaler.pkl')
 r_X_train = joblib.load("r_X_train.pkl")
 
+st.set_page_config(page_title="Nylon Dyeing Recipe Status Predictor", layout="wide")
+page_bg = '''
+<style>
+    .stApp {
+        background-image: url("https://source.unsplash.com/1600x900/?textile,dye");
+        background-size: cover;
+        color: white;
+    }
+    .css-18e3th9 {
+        background-color: rgba(0, 0, 0, 0.6) !important;
+        border-radius: 10px;
+        padding: 20px;
+    }
+</style>
+'''
+st.markdown(page_bg, unsafe_allow_html=True)
+
 st.title('Nylon Dyeing Recipe Status Predictor')
 
 def reset_prediction():
