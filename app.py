@@ -60,8 +60,7 @@ st.markdown(
     /* Target all Streamlit widget labels */
     label {
         color: black !important;
-        font-size: 16px !important;
-        font-weight: bold !important;
+        font-size: 24px !important;
     }
     </style>
     """,
