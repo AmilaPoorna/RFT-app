@@ -53,6 +53,7 @@ if st.button('Predict'):
     }
 
     rft_data = pd.DataFrame(input_data, index=[0])
+    st.write(rft_data)
     rft_data = pd.get_dummies(rft_data[['IsFirstColour', 'ColourShade', 'ColourDescription', 'IsLabDip', 'NylonType', 'DyeingMethod', 'Colour']])
     missing_cols = [col for col in c_X_train if col not in rft_data.columns]
     for col in missing_cols:
