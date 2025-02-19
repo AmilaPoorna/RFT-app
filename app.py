@@ -6,9 +6,9 @@ from sklearn.preprocessing import StandardScaler
 
 classification_model = joblib.load('classification_model.pkl')
 regression_model = joblib.load('regression_model.pkl')
-c_scaler = joblib.load('c_scaler.pkl')
 c_denier_encoder = joblib.load('c_denier_encoder.pkl')
 c_capacity_encoder = joblib.load('c_capacity_encoder.pkl')
+c_scaler = joblib.load('c_scaler.pkl')
 c_X_train = joblib.load("c_X_train.pkl")
 r_scaler = joblib.load('r_scaler.pkl')
 r_X_train = joblib.load("r_X_train.pkl")
@@ -53,18 +53,20 @@ if st.button('Predict'):
     }
 
     rft_data = pd.DataFrame(input_data, index=[0])
-    st.write(rft_data)
-    rft_data = pd.get_dummies(rft_data[['IsFirstColour', 'ColourShade', 'ColourDescription', 'IsLabDip', 'NylonType', 'DyeingMethod', 'Colour']])
+    rft_dummy_cols = ['IsFirstColour', 'ColourShade', 'ColourDescription', 'IsLabDip', 'NylonType', 'DyeingMethod', 'Colour']
+    rft_dummies = pd.get_dummies(rft_data[rft_dummy_cols])
+    rft_data = pd.concat([rft_data, rft_dummies], axis=1)
+    rft_data = rft_data.drop(columns=rft_dummy_cols)
     missing_cols = [col for col in c_X_train if col not in rft_data.columns]
     for col in missing_cols:
         rft_data[col] = False
+    rft_drop_first = ['IsFirstColour_No', 'ColourShade_Dark', 'ColourDescription_Normal', 'IsLabDip_No', 'NylonType_Micro Fiber Streatch Nylon', 'DyeingMethod_Bullet', 'Colour_Beige']
+    rft_data = rft_data.drop(columns=rft_drop_first)
     rft_data = rft_data[c_X_train]
-    rft_data['RecipeQty'] = c_scaler.transform(rft_data[['RecipeQty']])
-    st.write("Known Denier Classes:", c_denier_encoder.classes_)
-    st.write("Denier Values in Input Data:", rft_data['Denier'])
     rft_data['Denier'] = c_denier_encoder.transform(rft_data['Denier'])
     rft_data['MachineCapacity(Packages)'] = c_capacity_encoder.transform(rft_data['MachineCapacity(Packages)'])
-
+    rft_data['RecipeQty'] = c_scaler.transform(rft_data[['RecipeQty']])
+    
     prediction_class = classification_model.predict(rft_data)
 
     if prediction_class[0] == 1:
@@ -88,10 +90,15 @@ if st.button('Predict'):
                 'Supplier': supplier,
                 'ISO150': iso_150
             }, index=[0])
-            cost_data = pd.get_dummies(rft_data[['ColourShade', 'ColourDescription', 'NylonType', 'DyeingMethod', 'Supplier', 'ISO105']])
-            missing_cols = [col for col in r_X_train if col not in cost_data.columns]
+            cost_dummy_cols = ['ColourShade', 'ColourDescription', 'NylonType', 'DyeingMethod', 'Supplier', 'ISO105']
+            cost_dummies = pd.get_dummies(cost_data[cost_dummy_cols])
+            cost_data = pd.concat([cost_data, cost_dummies], axis=1)
+            cost_data = cost_data.drop(columns=cost_dummy_cols)
+            missing_cols = [col for col in c_X_train if col not in rft_data.columns]
             for col in missing_cols:
                 cost_data[col] = False
+            cost_drop_first = ['ColourShade_Dark', 'ColourDescription_Normal', 'NylonType_Micro Fiber Streatch Nylon', 'DyeingMethod_Bullet', 'Supplier_Harris & Menuk', 'ISO150_No']
+            cost_data = cost_data.drop(columns=cost_drop_first)
             cost_data = cost_data[r_X_train]
             cost_data['RecipeQty'] = r_scaler.transform(cost_data[['RecipeQty']])
 
