@@ -5,10 +5,14 @@ import pandas as pd
 from sklearn.preprocessing import StandardScaler
 
 def set_background(image_file):
+    """Sets the background image for the Streamlit app."""
+    with open(image_file, "rb") as image:
+        encoded_image = base64.b64encode(image.read()).decode()
+    
     page_bg_img = f"""
     <style>
     .stApp {{
-        background-image: url("{image_file}");
+        background-image: url("data:image/jpeg;base64,{encoded_image}");
         background-size: cover;
         background-position: center;
         background-repeat: no-repeat;
@@ -17,7 +21,7 @@ def set_background(image_file):
     """
     st.markdown(page_bg_img, unsafe_allow_html=True)
 
-# Call function to set background image
+# Call function to set background image (Make sure background.jpg is in the same directory)
 set_background("background.jpg")
 
 classification_model = joblib.load('classification_model.pkl')
