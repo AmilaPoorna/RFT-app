@@ -40,6 +40,11 @@ machine_capacity = st.selectbox('Machine Capacity (Packages)', [1, 2, 3, 4, 5, 6
 if 'prediction_class' not in st.session_state:
     st.session_state.prediction_class = None
 
+if prediction_class[0] == 1:
+    st.session_state.show_cost_section = True
+else:
+    st.session_state.show_cost_section = False
+
 if st.button('Predict Status'):
     input_data = {
         'RecipeQty': recipe_quantity,
@@ -80,7 +85,7 @@ if st.session_state.prediction_class is not None:
         prediction_label = "WFT. Please proceed with necessary steps."
     st.write(f"Prediction: {prediction_label}")
 
-    if st.session_state.prediction_class == 1:
+    if st.session_state.show_cost_section:
         supplier = st.selectbox('Supplier', ['Rudolf', 'Ohyoung', 'Harris & Menuk'], key="supplier")
         iso_105 = st.radio('ISO 105', ['Yes', 'No'], key="iso_150")
 
@@ -112,4 +117,5 @@ if st.session_state.prediction_class is not None:
 
 if st.button('Cancel'):
     st.session_state.prediction_class = None
+    st.session_state.show_cost_section = False
     st.rerun()
