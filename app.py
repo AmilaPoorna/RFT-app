@@ -120,7 +120,7 @@ if st.session_state.show_cost_section:
     cost_dummies = pd.get_dummies(cost_data[cost_dummy_cols])
     cost_data = pd.concat([cost_data, cost_dummies], axis=1)
     cost_data = cost_data.drop(columns=cost_dummy_cols)
-    missing_cols = [col for col in c_X_train if col not in cost_data.columns]
+    missing_cols = [col for col in r_X_train if col not in cost_data.columns]
     for col in missing_cols:
         cost_data[col] = False
     cost_drop_first = ['ColourShade_Dark', 'ColourDescription_Normal', 'NylonType_Micro Fiber Streatch Nylon', 'DyeingMethod_Bullet', 'Supplier_Harris & Menuk', 'ISO105_No']
