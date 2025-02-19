@@ -13,9 +13,9 @@ c_X_train = joblib.load("c_X_train.pkl")
 r_scaler = joblib.load('r_scaler.pkl')
 r_X_train = joblib.load("r_X_train.pkl")
 
-st.title('Dyeing Recipe Prediction System')
+st.title('Nylon Dyeing Recipe Status Predictor')
 
-recipe_quantity = st.number_input('Recipe Quantity (kg)', min_value=0.0, step=0.001)
+recipe_quantity = st.number_input('Recipe Quantity (kg)', min_value=0.001, step=0.001)
 
 colour_shade = st.selectbox('Colour Shade', ['Very Light', 'Light', 'Medium', 'Dark', 'Very Dark'])
 
