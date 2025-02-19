@@ -61,7 +61,8 @@ if st.button('Predict'):
     for col in missing_cols:
         rft_data[col] = False
     rft_drop_first = ['IsFirstColour_No', 'ColourShade_Dark', 'ColourDescription_Normal', 'IsLabDip_No', 'NylonType_Micro Fiber Streatch Nylon', 'DyeingMethod_Bullet', 'Colour_Beige']
-    rft_data = rft_data.drop(columns=set(rft_drop_first).intersection(rft_data.columns))
+    rft_drop = [col for col in rft_drop_first if col in rft_data.columns]
+    rft_data = rft_data.drop(columns=rft_drop)
     rft_data = rft_data[c_X_train]
     rft_data['Denier'] = c_denier_encoder.transform(rft_data['Denier'])
     rft_data['MachineCapacity(Packages)'] = c_capacity_encoder.transform(rft_data['MachineCapacity(Packages)'])
@@ -98,7 +99,8 @@ if st.button('Predict'):
             for col in missing_cols:
                 cost_data[col] = False
             cost_drop_first = ['ColourShade_Dark', 'ColourDescription_Normal', 'NylonType_Micro Fiber Streatch Nylon', 'DyeingMethod_Bullet', 'Supplier_Harris & Menuk', 'ISO150_No']
-            cost_data = cost_data.drop(columns=set(cost_drop_first).intersection(cost_data.columns))
+            cost_drop = [col for col in cost_drop_first if col in cost_data.columns]
+            cost_data = cost_data.drop(columns=cost_drop)
             cost_data = cost_data[r_X_train]
             cost_data['RecipeQty'] = r_scaler.transform(cost_data[['RecipeQty']])
 
