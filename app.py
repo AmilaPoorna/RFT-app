@@ -4,6 +4,29 @@ import numpy as np
 import pandas as pd
 from sklearn.preprocessing import StandardScaler
 
+def get_base64_image(image_path):
+    with open(image_path, "rb") as image_file:
+        encoded = base64.b64encode(image_file.read()).decode()
+    return encoded
+
+def set_background(image_path):
+    base64_str = get_base64_image(image_path)
+    page_bg_img = f"""
+    <style>
+    .stApp {{
+        background-image: url("data:image/jpeg;base64,{base64_str}");
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+    }}
+    </style>
+    """
+    st.markdown(page_bg_img, unsafe_allow_html=True)
+
+set_background("background.jpg")
+
+st.title('Nylon Dyeing Recipe Status Predictor')
+
 classification_model = joblib.load('classification_model.pkl')
 regression_model = joblib.load('regression_model.pkl')
 c_denier_encoder = joblib.load('c_denier_encoder.pkl')
@@ -12,8 +35,6 @@ c_scaler = joblib.load('c_scaler.pkl')
 c_X_train = joblib.load("c_X_train.pkl")
 r_scaler = joblib.load('r_scaler.pkl')
 r_X_train = joblib.load("r_X_train.pkl")
-
-st.title('Nylon Dyeing Recipe Status Predictor')
 
 def reset_prediction():
     st.session_state.prediction_class = None
