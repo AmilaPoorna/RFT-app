@@ -4,7 +4,6 @@ import numpy as np
 import pandas as pd
 from sklearn.preprocessing import StandardScaler
 
-# Load models and encoders
 classification_model = joblib.load('classification_model.pkl')
 regression_model = joblib.load('regression_model.pkl')
 c_denier_encoder = joblib.load('c_denier_encoder.pkl')
@@ -16,17 +15,13 @@ r_X_train = joblib.load("r_X_train.pkl")
 
 st.title('Nylon Dyeing Recipe Status Predictor')
 
-# Initialize session state variables
 if 'prediction_class' not in st.session_state:
     st.session_state.prediction_class = None
     st.session_state.prediction_label = None
-    st.session_state.show_value_fields = False  # Controls visibility of cost section
-    st.session_state.prediction_value = None  # Stores predicted cost
-    st.session_state.selected_supplier = "Rudolf"
-    st.session_state.selected_iso150 = "Yes"
-    st.session_state.previous_inputs = None  # Store previous input values
+    st.session_state.show_value_fields = False
+    st.session_state.prediction_value = None
+    st.session_state.previous_inputs = None
 
-# User Inputs
 recipe_quantity = st.number_input('Recipe Quantity (kg)', min_value=0.001, step=0.001)
 colour_shade = st.selectbox('Colour Shade', ['Very Light', 'Light', 'Medium', 'Dark', 'Very Dark'])
 first_colour = st.radio('First Colour', ['Yes', 'No'])
@@ -40,7 +35,6 @@ colour = st.selectbox('Colour', ['Black', 'White', 'Grey', 'Blue', 'Navy Blue', 
 machine_capacity = st.selectbox('Machine Capacity (Packages)', [1, 2, 3, 4, 5, 6, 8, 10, 12, 15, 16, 24, 28, 30, 36, 42,
                                                                  25, 48, 54, 56, 75, 90, 104, 108, 132, 216, 264, 432, 558, 981])
 
-# Store current inputs
 current_inputs = {
     'RecipeQty': recipe_quantity,
     'ColourShade': colour_shade,
@@ -54,12 +48,10 @@ current_inputs = {
     'MachineCapacity(Packages)': machine_capacity
 }
 
-# If any field other than supplier/ISO150 changes, reset cost prediction section
 if st.session_state.previous_inputs is not None and st.session_state.previous_inputs != current_inputs:
     st.session_state.prediction_value = None
-    st.session_state.show_value_fields = False  # Hide cost prediction section
+    st.session_state.show_value_fields = False
 
-# Update previous inputs in session state
 st.session_state.previous_inputs = current_inputs
 
 # Predict Status Button
@@ -85,55 +77,41 @@ if st.button('Predict Status'):
     st.session_state.prediction_class = prediction_class[0]
     st.session_state.prediction_label = "RFT" if prediction_class[0] == 1 else "WFT. Please proceed with necessary steps."
     st.session_state.show_value_fields = prediction_class[0] == 1
-    st.session_state.prediction_value = None  # Reset cost when status is predicted
+    st.session_state.prediction_value = None
 
-# Display Classification Result
 if st.session_state.prediction_label is not None:
     st.write(f"Prediction: {st.session_state.prediction_label}")
 
-# Cost Prediction for RFT class
-if st.session_state.show_value_fields:
-    supplier = st.selectbox('Supplier', ['Rudolf', 'Ohyoung', 'Harris & Menuk'],
-                            index=['Rudolf', 'Ohyoung', 'Harris & Menuk'].index(st.session_state.selected_supplier))
-    iso_150 = st.radio('ISO 150', ['Yes', 'No'], index=['Yes', 'No'].index(st.session_state.selected_iso150))
+if st.button('Predict Cost'):
+    cost_data = pd.DataFrame({
+        'RecipeQty': recipe_quantity,
+        'ColourShade': colour_shade,
+        'ColourDescription': colour_description,
+        'NylonType': nylon_type,
+        'DyeingMethod': dyeing_method,
+        'Supplier': supplier,
+        'ISO150': iso_150
+    }, index=[0])
 
-    # Update session state if supplier or ISO150 changes
-    if supplier != st.session_state.selected_supplier or iso_150 != st.session_state.selected_iso150:
-        st.session_state.selected_supplier = supplier
-        st.session_state.selected_iso150 = iso_150
+    cost_dummy_cols = ['ColourShade', 'ColourDescription', 'NylonType', 'DyeingMethod', 'Supplier', 'ISO150']
+    cost_dummies = pd.get_dummies(cost_data[cost_dummy_cols])
+    cost_data = pd.concat([cost_data, cost_dummies], axis=1)
+    cost_data = cost_data.drop(columns=cost_dummy_cols, errors='ignore')
 
-    if st.button('Predict Cost'):
-        cost_data = pd.DataFrame({
-            'RecipeQty': recipe_quantity,
-            'ColourShade': colour_shade,
-            'ColourDescription': colour_description,
-            'NylonType': nylon_type,
-            'DyeingMethod': dyeing_method,
-            'Supplier': st.session_state.selected_supplier,
-            'ISO150': st.session_state.selected_iso150
-        }, index=[0])
+    missing_cols = [col for col in r_X_train if col not in cost_data.columns]
+    for col in missing_cols:
+        cost_data[col] = False
 
-        cost_dummy_cols = ['ColourShade', 'ColourDescription', 'NylonType', 'DyeingMethod', 'Supplier', 'ISO150']
-        cost_dummies = pd.get_dummies(cost_data[cost_dummy_cols])
-        cost_data = pd.concat([cost_data, cost_dummies], axis=1)
-        cost_data = cost_data.drop(columns=cost_dummy_cols, errors='ignore')
+    cost_data = cost_data[r_X_train]
 
-        missing_cols = [col for col in r_X_train if col not in cost_data.columns]
-        for col in missing_cols:
-            cost_data[col] = False
+    cost_data['RecipeQty'] = r_scaler.transform(cost_data[['RecipeQty']])
 
-        cost_data = cost_data[r_X_train]
+    st.session_state.prediction_value = regression_model.predict(cost_data)[0]
 
-        cost_data['RecipeQty'] = r_scaler.transform(cost_data[['RecipeQty']])
+if st.session_state.prediction_value is not None:
+    st.write(f"Predicted Cost: {st.session_state.prediction_value:.2f} LKR")
 
-        st.session_state.prediction_value = regression_model.predict(cost_data)[0]
-
-    # Display predicted cost if available
-    if st.session_state.prediction_value is not None:
-        st.write(f"Predicted Cost: {st.session_state.prediction_value:.2f} LKR")
-
-    # Cancel Button
-    if st.button('Cancel'):
-        st.session_state.show_value_fields = False
-        st.session_state.prediction_value = None
-        st.rerun()
+if st.button('Cancel'):
+    st.session_state.show_value_fields = False
+    st.session_state.prediction_value = None
+    st.rerun()
