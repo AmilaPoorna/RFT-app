@@ -37,8 +37,10 @@ colour = st.selectbox('Colour', ['Black', 'White', 'Grey', 'Blue', 'Navy Blue', 
 machine_capacity = st.selectbox('Machine Capacity (Packages)', [1, 2, 3, 4, 5, 6, 8, 10, 12, 15, 16, 24, 28, 30, 36, 42,
                                                                25, 48, 54, 56, 75, 90, 104, 108, 132, 216, 264, 432, 558, 981])
 
-if st.button('Predict Status'):
+if 'prediction_class' not in st.session_state:
+    st.session_state.prediction_class = None
 
+if st.button('Predict Status'):
     input_data = {
         'RecipeQty': recipe_quantity,
         'ColourShade': colour_shade,
@@ -69,17 +71,18 @@ if st.button('Predict Status'):
     rft_data['RecipeQty'] = c_scaler.transform(rft_data[['RecipeQty']])
     
     prediction_class = classification_model.predict(rft_data)
+    st.session_state.prediction_class = prediction_class[0]  # Store result in session_state
 
-    if prediction_class[0] == 1:
+if st.session_state.prediction_class is not None:
+    if st.session_state.prediction_class == 1:
         prediction_label = "RFT"
-    elif prediction_class[0] == 0:
+    else:
         prediction_label = "WFT. Please proceed with necessary steps."
-
     st.write(f"Prediction: {prediction_label}")
 
-    if prediction_class[0] == 1:
-        supplier = st.selectbox('Supplier', ['Rudolf', 'Ohyoung', 'Harris & Menuk'])
-        iso_150 = st.radio('ISO 105', ['Yes', 'No'])
+    if st.session_state.prediction_class == 1:
+        supplier = st.selectbox('Supplier', ['Rudolf', 'Ohyoung', 'Harris & Menuk'], key="supplier")
+        iso_150 = st.radio('ISO 105', ['Yes', 'No'], key="iso_150")
 
         if st.button('Predict Cost'):
             cost_data = pd.DataFrame({
@@ -91,14 +94,14 @@ if st.button('Predict Status'):
                 'Supplier': supplier,
                 'ISO150': iso_150
             }, index=[0])
-            cost_dummy_cols = ['ColourShade', 'ColourDescription', 'NylonType', 'DyeingMethod', 'Supplier', 'ISO105']
+            cost_dummy_cols = ['ColourShade', 'ColourDescription', 'NylonType', 'DyeingMethod', 'Supplier', 'ISO150']
             cost_dummies = pd.get_dummies(cost_data[cost_dummy_cols])
             cost_data = pd.concat([cost_data, cost_dummies], axis=1)
             cost_data = cost_data.drop(columns=cost_dummy_cols)
-            missing_cols = [col for col in c_X_train if col not in rft_data.columns]
+            missing_cols = [col for col in r_X_train if col not in cost_data.columns]
             for col in missing_cols:
                 cost_data[col] = False
-            cost_drop_first = ['ColourShade_Dark', 'ColourDescription_Normal', 'NylonType_Micro Fiber Streatch Nylon', 'DyeingMethod_Bullet', 'Supplier_Harris & Menuk', 'ISO105_No']
+            cost_drop_first = ['ColourShade_Dark', 'ColourDescription_Normal', 'NylonType_Micro Fiber Streatch Nylon', 'DyeingMethod_Bullet', 'Supplier_Harris & Menuk', 'ISO150_No']
             cost_drop = [col for col in cost_drop_first if col in cost_data.columns]
             cost_data = cost_data.drop(columns=cost_drop)
             cost_data = cost_data[r_X_train]
@@ -108,4 +111,5 @@ if st.button('Predict Status'):
             st.write(f"Predicted Cost: {predicted_cost[0]:.2f} LKR")
 
 if st.button('Cancel'):
+    st.session_state.prediction_class = None
     st.experimental_rerun()
