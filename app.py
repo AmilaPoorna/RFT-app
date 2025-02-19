@@ -4,6 +4,22 @@ import numpy as np
 import pandas as pd
 from sklearn.preprocessing import StandardScaler
 
+def set_background(image_file):
+    page_bg_img = f"""
+    <style>
+    .stApp {{
+        background-image: url("{image_file}");
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+    }}
+    </style>
+    """
+    st.markdown(page_bg_img, unsafe_allow_html=True)
+
+# Call function to set background image
+set_background("background.jpg")
+
 classification_model = joblib.load('classification_model.pkl')
 regression_model = joblib.load('regression_model.pkl')
 c_denier_encoder = joblib.load('c_denier_encoder.pkl')
