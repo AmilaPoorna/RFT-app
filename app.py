@@ -26,6 +26,15 @@ def set_background(image_path):
 
 set_background("background.jpg")
 
+classification_model = joblib.load('classification_model.pkl')
+regression_model = joblib.load('regression_model.pkl')
+c_denier_encoder = joblib.load('c_denier_encoder.pkl')
+c_capacity_encoder = joblib.load('c_capacity_encoder.pkl')
+c_scaler = joblib.load('c_scaler.pkl')
+c_X_train = joblib.load("c_X_train.pkl")
+r_scaler = joblib.load('r_scaler.pkl')
+r_X_train = joblib.load("r_X_train.pkl")
+
 st.markdown(
     """
     <style>
@@ -41,18 +50,22 @@ st.markdown(
 
 st.markdown('<p class="black-title">Nylon Dyeing Recipe Status Predictor</p>', unsafe_allow_html=True)
 
-classification_model = joblib.load('classification_model.pkl')
-regression_model = joblib.load('regression_model.pkl')
-c_denier_encoder = joblib.load('c_denier_encoder.pkl')
-c_capacity_encoder = joblib.load('c_capacity_encoder.pkl')
-c_scaler = joblib.load('c_scaler.pkl')
-c_X_train = joblib.load("c_X_train.pkl")
-r_scaler = joblib.load('r_scaler.pkl')
-r_X_train = joblib.load("r_X_train.pkl")
-
 def reset_prediction():
     st.session_state.prediction_class = None
     st.session_state.show_cost_section = False
+
+st.markdown(
+    """
+    <style>
+    /* Target all Streamlit widget labels */
+    label {
+        color: black !important;
+        font-size: 16px !important;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
 
 recipe_quantity = st.number_input('Recipe Quantity (kg)', min_value=0.001, step=0.001, format="%.3f", key="recipe_quantity", on_change=reset_prediction)
 colour_shade = st.selectbox('Colour Shade', ['Very Light', 'Light', 'Medium', 'Dark', 'Very Dark'], key="colour_shade", on_change=reset_prediction)
