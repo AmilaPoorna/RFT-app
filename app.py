@@ -41,7 +41,6 @@ st.markdown(
     .black-title {
         color: black !important;
         font-size: 36px !important;
-        font-weight: bold;
         font-weight: bold !important;
     }
     </style>
@@ -62,6 +61,7 @@ st.markdown(
     label {
         color: black !important;
         font-size: 16px !important;
+        font-weight: bold !important;
     }
     </style>
     """,
