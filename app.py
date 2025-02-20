@@ -3,25 +3,28 @@ import joblib
 import numpy as np
 import pandas as pd
 from sklearn.preprocessing import StandardScaler
+import base64
 
-st.markdown(
-    """
+def get_base64_image(image_path):
+    with open(image_path, "rb") as image_file:
+        encoded = base64.b64encode(image_file.read()).decode()
+    return encoded
+
+def set_background(image_path):
+    base64_str = get_base64_image(image_path)
+    page_bg_img = f"""
     <style>
-    .stApp {
-        background: url('background.jpg') no-repeat center center fixed;
+    .stApp {{
+        background-image: url("data:image/jpeg;base64,{base64_str}");
         background-size: cover;
-    }
-    .overlay {
-        position: absolute;
-        width: 100%;
-        height: 100%;
-        background: rgba(0, 0, 0, 0.5); /* Adjust opacity */
-    }
+        background-position: center;
+        background-repeat: no-repeat;
+    }}
     </style>
-    <div class="overlay"></div>
-    """,
-    unsafe_allow_html=True
-)
+    """
+    st.markdown(page_bg_img, unsafe_allow_html=True)
+
+set_background("background.jpg")
 
 classification_model = joblib.load('classification_model.pkl')
 regression_model = joblib.load('regression_model.pkl')
