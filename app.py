@@ -35,39 +35,11 @@ c_X_train = joblib.load("c_X_train.pkl")
 r_scaler = joblib.load('r_scaler.pkl')
 r_X_train = joblib.load("r_X_train.pkl")
 
-st.markdown(
-    """
-    <style>
-    .black-title {
-        color: black !important;
-        font-size: 36px !important;
-        font-weight: bold;
-    }
-    </style>
-    """,
-    unsafe_allow_html=True
-)
-
-st.markdown('<p class="black-title">Nylon Dyeing Recipe Status Predictor</p>', unsafe_allow_html=True)
+st.title('Nylon Dyeing Recipe Status Predictor')
 
 def reset_prediction():
     st.session_state.prediction_class = None
     st.session_state.show_cost_section = False
-
-st.markdown(
-    """
-    <style>
-    /* Target all Streamlit widget labels */
-    div[data-testid="stNumberInput"] label,
-    div[data-testid="stSelectbox"] label,
-    div[data-testid="stRadio"] label {
-        color: black !important;
-        font-size: 16px;
-    }
-    </style>
-    """,
-    unsafe_allow_html=True
-)
 
 recipe_quantity = st.number_input('Recipe Quantity (kg)', min_value=0.001, step=0.001, format="%.3f", key="recipe_quantity", on_change=reset_prediction)
 colour_shade = st.selectbox('Colour Shade', ['Very Light', 'Light', 'Medium', 'Dark', 'Very Dark'], key="colour_shade", on_change=reset_prediction)
