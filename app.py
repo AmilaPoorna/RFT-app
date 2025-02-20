@@ -10,21 +10,33 @@ def get_base64_image(image_path):
         encoded = base64.b64encode(image_file.read()).decode()
     return encoded
 
-def set_background(image_path):
+def set_background(image_path, blur=5, opacity=0.5):
     base64_str = get_base64_image(image_path)
     page_bg_img = f"""
     <style>
     .stApp {{
+        position: relative;
         background-image: url("data:image/jpeg;base64,{base64_str}");
         background-size: cover;
         background-position: center;
         background-repeat: no-repeat;
+        filter: blur({blur}px); /* Blurring the background */
+    }}
+    .stApp::before {{
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(255, 255, 255, {opacity}); /* Overlay with transparency */
+        z-index: -1;
     }}
     </style>
     """
     st.markdown(page_bg_img, unsafe_allow_html=True)
 
-set_background("background.jpg")
+set_background("background.jpg", blur=5, opacity=0.4)
 
 classification_model = joblib.load('classification_model.pkl')
 regression_model = joblib.load('regression_model.pkl')
