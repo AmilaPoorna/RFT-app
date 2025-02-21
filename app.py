@@ -111,7 +111,7 @@ if st.session_state.prediction_class is not None:
     st.write(f"Prediction: {prediction_label}")
 
 if st.session_state.show_cost_section:
-    st.title('### RFT Nylon Dyeing Recipe Cost Predictor')
+    st.header('RFT Nylon Dyeing Recipe Cost Predictor')
     
     supplier = st.selectbox('Select the Supplier:', ['Rudolf', 'Ohyoung', 'Harris & Menuk'], key="supplier")
     iso_105 = st.radio('Does the dyestuff have high fastness ratings in ISO 105 series tests?', ['Yes', 'No'], key="iso_105")
